@@ -1,34 +1,23 @@
 package main
 
 import (
-	"context"
-	"encoding/json"
-	"fmt"
-	"github.com/spf13/viper"
-	"time"
-	"tokowiwin/constants"
-	"tokowiwin/repositories/db"
+	"tokowiwin/config"
+	"tokowiwin/servers/http"
+	"tokowiwin/utils/contexts"
 )
 
-//var viperClient string
-
 func init() {
-	viper.SetConfigFile("config.json")
-	err := viper.ReadInConfig()
-	if err != nil {
-		panic(err)
-	}
+	config.InitAppConfig()
 }
 
 func main() {
-	timeout := viper.GetInt(constants.CONTEXT_TIMEOUT)
-	ctx, _ := context.WithTimeout(context.Background(), time.Duration(timeout)*time.Second)
-	z := db.NewDatabaseRepository(ctx)
-	email, err := z.GetUserByEmail(ctx, "z")
-	if err != nil {
-		fmt.Println("ERR", err)
-		return
-	}
-	em, _ := json.Marshal(email)
-	fmt.Println("EMAIL", string(em))
+	cfg := config.GetConfig()
+	ctx := contexts.BuildContextInit(cfg)
+	http.InitFactoryHTTP(ctx, cfg)
+	//http.InitFactoryHTTP(ctx, cfg)
+
+	//http.InitHttp(cfg)
+
+	//signal.Notify()
+
 }
