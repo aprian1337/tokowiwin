@@ -2,20 +2,19 @@ package http
 
 import (
 	"context"
+	validator "github.com/go-playground/validator/v10"
 	"tokowiwin/config"
-	"tokowiwin/controllers"
 	"tokowiwin/repositories/db"
-	usecase_users "tokowiwin/usecases/users/usecase"
+	users "tokowiwin/usecases/users/usecase"
 )
 
 func InitFactoryHTTP(ctx context.Context, cfg *config.AppConfig) {
 	dbRepo := db.NewDatabaseRepository(ctx, cfg)
+	validate := validator.New()
+	h := DeliveryHTTP{}
 
-	ucAuth := usecase_users.UCBuyerLogin{}.NewUsecase(ctx, dbRepo)
-	authDelivery := controllers.NewController(ctx, ucAuth)
+	h.UsersAuthentication = AddController(ctx, users.UCBuyerLogin{}.NewUsecase(ctx, dbRepo), validate)
+	h.UsersRegister = AddController(ctx, users.UCUserRegister{}.NewUsecase(ctx, dbRepo), validate)
 
-	h := HTTPDelivery{
-		UsersAuthentication: authDelivery,
-	}
 	h.InitHTTPClient(cfg)
 }

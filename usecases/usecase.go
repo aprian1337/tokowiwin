@@ -1,13 +1,18 @@
 package usecases
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/go-playground/validator/v10"
+	"github.com/gofiber/fiber/v2"
+)
 
 type HandleUsecaseData struct {
-	HTTPData *fiber.Request
+	HTTPData  *fiber.Ctx
+	Validator *validator.Validate
 }
 
-func BuildHandleUsecaseData(c *fiber.Ctx) HandleUsecaseData {
+func BuildHandleUsecaseData(c *fiber.Ctx, validate *validator.Validate) HandleUsecaseData {
 	return HandleUsecaseData{
-		HTTPData: c.Request(),
+		Validator: validate,
+		HTTPData:  c,
 	}
 }

@@ -11,6 +11,9 @@ func GetColumns(field interface{}) []any {
 		e := reflect.ValueOf(field).Elem()
 		n := e.NumField()
 		for i := 0; i < n; i++ {
+			if e.Type().Field(i).Tag.Get("db") == "id" && e.Type().Field(i).Tag.Get("autoinc") == "true" {
+				continue
+			}
 			columns = append(columns, e.Type().Field(i).Tag.Get("db"))
 		}
 	} else if f := reflect.TypeOf(field); f.Kind() == reflect.Slice || f.Kind() == reflect.Array {
@@ -19,6 +22,9 @@ func GetColumns(field interface{}) []any {
 			e := reflect.ValueOf(z).Elem()
 			n := e.NumField()
 			for i := 0; i < n; i++ {
+				if e.Type().Field(i).Tag.Get("db") == "id" && e.Type().Field(i).Tag.Get("autoinc") == "true" {
+					continue
+				}
 				columns = append(columns, e.Type().Field(i).Tag.Get("db"))
 			}
 		}
