@@ -36,7 +36,7 @@ func (r *DatabaseRepository) GetProductsAll(ctx context.Context, columns ...any)
 	}
 
 	columnsStr := array.ToStringWithDelimiter(columns, ",")
-	query := strings.ReplaceAll(modelDb.QueryGetAll(), constants.DB_COLS, columnsStr)
+	query := strings.ReplaceAll(modelDb.QueryGetAll(), constants.DbCols, columnsStr)
 
 	rows, _ := r.pgClient.Query(ctx, query)
 
@@ -45,7 +45,7 @@ func (r *DatabaseRepository) GetProductsAll(ctx context.Context, columns ...any)
 	for rows.Next() {
 		var temp = new(model.Products)
 
-		err = rows.Scan(structs.GetAddressByFieldTag(temp, constants.DB_TAG, converts.AnyArrayToString(columns))...)
+		err = rows.Scan(structs.GetAddressByFieldTag(temp, constants.DbTag, converts.AnyArrayToString(columns))...)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -69,9 +69,9 @@ func (r *DatabaseRepository) GetProductsByID(ctx context.Context, id int64, colu
 	}
 
 	columnsStr := array.ToStringWithDelimiter(columns, ",")
-	query := strings.ReplaceAll(modelDb.QueryGetByID(), constants.DB_COLS, columnsStr)
+	query := strings.ReplaceAll(modelDb.QueryGetByID(), constants.DbCols, columnsStr)
 
-	err = r.pgClient.QueryRow(ctx, query, id).Scan(structs.GetAddressByFieldTag(modelDb, constants.DB_TAG, converts.AnyArrayToString(columns))...)
+	err = r.pgClient.QueryRow(ctx, query, id).Scan(structs.GetAddressByFieldTag(modelDb, constants.DbTag, converts.AnyArrayToString(columns))...)
 	if err != nil {
 		return nil, err
 	}
@@ -94,8 +94,8 @@ func (r *DatabaseRepository) InsertProduct(ctx context.Context, tx pgx.Tx, users
 
 	columns := structs.GetColumns(modelDb, "id")
 	columnsStr := array.ToStringWithDelimiter(columns, ",")
-	query := strings.ReplaceAll(modelDb.QueryInsert(), constants.DB_COLS, columnsStr)
-	_, err = tx.Exec(ctx, query, structs.GetAddressByFieldTag(users, constants.DB_TAG, converts.AnyArrayToString(columns))...)
+	query := strings.ReplaceAll(modelDb.QueryInsert(), constants.DbCols, columnsStr)
+	_, err = tx.Exec(ctx, query, structs.GetAddressByFieldTag(users, constants.DbTag, converts.AnyArrayToString(columns))...)
 	if err != nil {
 		return err
 	}
@@ -114,9 +114,9 @@ func (r *DatabaseRepository) GetUserByEmail(ctx context.Context, email string, c
 	}
 
 	columnsStr := array.ToStringWithDelimiter(columns, ",")
-	query := strings.ReplaceAll(modelDb.QueryGetByEmail(), constants.DB_COLS, columnsStr)
+	query := strings.ReplaceAll(modelDb.QueryGetByEmail(), constants.DbCols, columnsStr)
 
-	err = r.pgClient.QueryRow(ctx, query, email).Scan(structs.GetAddressByFieldTag(modelDb, constants.DB_TAG, converts.AnyArrayToString(columns))...)
+	err = r.pgClient.QueryRow(ctx, query, email).Scan(structs.GetAddressByFieldTag(modelDb, constants.DbTag, converts.AnyArrayToString(columns))...)
 	if err != nil {
 		return nil, err
 	}
@@ -138,8 +138,8 @@ func (r *DatabaseRepository) InsertUser(ctx context.Context, tx pgx.Tx, users *m
 	}
 	columns := structs.GetColumns(modelDb, "id")
 	columnsStr := array.ToStringWithDelimiter(columns, ",")
-	query := strings.ReplaceAll(modelDb.QueryInsert(), constants.DB_COLS, columnsStr)
-	_, err = tx.Exec(ctx, query, structs.GetAddressByFieldTag(users, constants.DB_TAG, converts.AnyArrayToString(columns))...)
+	query := strings.ReplaceAll(modelDb.QueryInsert(), constants.DbCols, columnsStr)
+	_, err = tx.Exec(ctx, query, structs.GetAddressByFieldTag(users, constants.DbTag, converts.AnyArrayToString(columns))...)
 	if err != nil {
 		return err
 	}
@@ -162,8 +162,8 @@ func (r *DatabaseRepository) InsertSnapshot(ctx context.Context, tx pgx.Tx, snap
 
 	columns := structs.GetColumns(modelDb, "id")
 	columnsStr := array.ToStringWithDelimiter(columns, ",")
-	query := strings.ReplaceAll(modelDb.QueryInsert(), constants.DB_COLS, columnsStr)
-	_, err = tx.Exec(ctx, query, structs.GetAddressByFieldTag(snapshot, constants.DB_TAG, converts.AnyArrayToString(columns))...)
+	query := strings.ReplaceAll(modelDb.QueryInsert(), constants.DbCols, columnsStr)
+	_, err = tx.Exec(ctx, query, structs.GetAddressByFieldTag(snapshot, constants.DbTag, converts.AnyArrayToString(columns))...)
 	if err != nil {
 		return err
 	}
@@ -186,8 +186,8 @@ func (r *DatabaseRepository) InsertTransaction(ctx context.Context, tx pgx.Tx, t
 
 	columns := structs.GetColumns(modelDb, "id")
 	columnsStr := array.ToStringWithDelimiter(columns, ",")
-	query := strings.ReplaceAll(modelDb.QueryInsert(), constants.DB_COLS, columnsStr)
-	_, err = tx.Exec(ctx, query, structs.GetAddressByFieldTag(transaction, constants.DB_TAG, converts.AnyArrayToString(columns))...)
+	query := strings.ReplaceAll(modelDb.QueryInsert(), constants.DbCols, columnsStr)
+	_, err = tx.Exec(ctx, query, structs.GetAddressByFieldTag(transaction, constants.DbTag, converts.AnyArrayToString(columns))...)
 	if err != nil {
 		return err
 	}
@@ -210,8 +210,8 @@ func (r *DatabaseRepository) InsertCart(ctx context.Context, tx pgx.Tx, cart *mo
 
 	columns := structs.GetColumns(modelDb, "id")
 	columnsStr := array.ToStringWithDelimiter(columns, ",")
-	query := strings.ReplaceAll(modelDb.QueryInsert(), constants.DB_COLS, columnsStr)
-	_, err = tx.Exec(ctx, query, structs.GetAddressByFieldTag(cart, constants.DB_TAG, converts.AnyArrayToString(columns))...)
+	query := strings.ReplaceAll(modelDb.QueryInsert(), constants.DbCols, columnsStr)
+	_, err = tx.Exec(ctx, query, structs.GetAddressByFieldTag(cart, constants.DbTag, converts.AnyArrayToString(columns))...)
 	if err != nil {
 		return err
 	}
