@@ -5,13 +5,13 @@ import (
 	"tokowiwin/utils/array"
 )
 
-func GetColumns(field interface{}) []any {
+func GetColumns(field interface{}, exclude ...string) []any {
 	columns := make([]any, 0)
 	if f := reflect.TypeOf(field); f.Kind() == reflect.Ptr {
 		e := reflect.ValueOf(field).Elem()
 		n := e.NumField()
 		for i := 0; i < n; i++ {
-			if e.Type().Field(i).Tag.Get("db") == "id" && e.Type().Field(i).Tag.Get("autoinc") == "true" {
+			if array.Contains(exclude, e.Type().Field(i).Tag.Get("db")) {
 				continue
 			}
 			columns = append(columns, e.Type().Field(i).Tag.Get("db"))
@@ -22,7 +22,7 @@ func GetColumns(field interface{}) []any {
 			e := reflect.ValueOf(z).Elem()
 			n := e.NumField()
 			for i := 0; i < n; i++ {
-				if e.Type().Field(i).Tag.Get("db") == "id" && e.Type().Field(i).Tag.Get("autoinc") == "true" {
+				if array.Contains(exclude, e.Type().Field(i).Tag.Get("db")) {
 					continue
 				}
 				columns = append(columns, e.Type().Field(i).Tag.Get("db"))

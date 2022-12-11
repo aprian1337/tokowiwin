@@ -5,6 +5,7 @@ import (
 	validator "github.com/go-playground/validator/v10"
 	"tokowiwin/config"
 	"tokowiwin/repositories/db"
+	products "tokowiwin/usecases/products/usecase"
 	users "tokowiwin/usecases/users/usecase"
 )
 
@@ -13,8 +14,13 @@ func InitFactoryHTTP(ctx context.Context, cfg *config.AppConfig) {
 	validate := validator.New()
 	h := DeliveryHTTP{}
 
-	h.UsersAuthentication = AddController(ctx, users.UCBuyerLogin{}.NewUsecase(ctx, dbRepo), validate)
-	h.UsersRegister = AddController(ctx, users.UCUserRegister{}.NewUsecase(ctx, dbRepo), validate)
+	//Users Module
+	h.UsersAuthentication = AddController(users.UCLogin{}.NewUsecase(ctx, dbRepo), validate)
+	h.UsersRegister = AddController(users.UCRegister{}.NewUsecase(ctx, dbRepo), validate)
+
+	//Products Module
+	h.ProductsInsert = AddController(products.UCInsert{}.NewUsecase(ctx, dbRepo), validate)
+	h.ProductsGet = AddController(products.UCGet{}.NewUsecase(ctx, dbRepo), validate)
 
 	h.InitHTTPClient(cfg)
 }

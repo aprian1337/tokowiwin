@@ -12,12 +12,6 @@ func init() {
 
 func main() {
 	cfg := config.GetConfig()
-	ctx := contexts.BuildContextInit(cfg)
+	ctx := contexts.BuildContextInit()
 	http.InitFactoryHTTP(ctx, cfg)
-	//http.InitFactoryHTTP(ctx, cfg)
-
-	//http.InitHttp(cfg)
-
-	//signal.Notify()
-
 }

@@ -7,33 +7,33 @@ import (
 	"tokowiwin/utils/hash"
 )
 
-type UCLogin struct{}
-type usecaseBuyerLogin struct {
+type UCProductsAll struct{}
+type usecaseProductsAll struct {
 	ctx  context.Context
 	repo db.RepositoryI
 }
 
-type requestLogin struct {
+type requestAll struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
-type responseLogin struct {
+type responseAll struct {
 	Success int    `json:"success"`
 	Message string `json:"message"`
 }
 
-func (c UCLogin) NewUsecase(ctx context.Context, repo db.RepositoryI) *usecaseBuyerLogin {
-	return &usecaseBuyerLogin{
+func (c UCProductsAll) NewUsecase(ctx context.Context, repo db.RepositoryI) *usecaseProductsAll {
+	return &usecaseProductsAll{
 		ctx:  ctx,
 		repo: repo,
 	}
 }
 
-func (u usecaseBuyerLogin) HandleUsecase(ctx context.Context, data usecases.HandleUsecaseData) (interface{}, error) {
+func (u usecaseProductsAll) HandleUsecase(ctx context.Context, data usecases.HandleUsecaseData) (interface{}, error) {
 	var (
-		req  = new(requestLogin)
-		resp = new(responseLogin)
+		req  = new(requestAll)
+		resp = new(responseAll)
 		err  error
 	)
 

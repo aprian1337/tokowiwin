@@ -19,7 +19,8 @@ type Server struct {
 }
 
 type Context struct {
-	Timeout int
+	TimeoutInit int
+	TimeoutApp  int
 }
 
 type Database struct {

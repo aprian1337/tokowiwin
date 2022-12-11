@@ -2,19 +2,20 @@ package usecase
 
 import (
 	"context"
+	"github.com/jackc/pgx/v5"
 	"tokowiwin/repositories/db"
 	"tokowiwin/repositories/model"
 	"tokowiwin/usecases"
 	"tokowiwin/utils/hash"
 )
 
-type UCUserRegister struct{}
+type UCRegister struct{}
 type usecaseUserRegister struct {
 	ctx  context.Context
-	repo db.PsqlRepo
+	repo db.RepositoryI
 }
 
-func (c UCUserRegister) NewUsecase(ctx context.Context, repo db.PsqlRepo) *usecaseUserRegister {
+func (c UCRegister) NewUsecase(ctx context.Context, repo db.RepositoryI) *usecaseUserRegister {
 	return &usecaseUserRegister{
 		ctx:  ctx,
 		repo: repo,
@@ -45,12 +46,21 @@ func (u usecaseUserRegister) HandleUsecase(ctx context.Context, data usecases.Ha
 	if err != nil {
 		return nil, err
 	}
+
 	hashPassword := hash.HashPassword(req.Password)
-	err = u.repo.InsertEmail(context.Background(), nil, &model.Users{
-		Name:     req.Name,
-		Email:    req.Email,
-		Password: hashPassword,
+	err = db.ExecuteWithTx(ctx, data.TxExecutor, func(tx pgx.Tx) error {
+		err = u.repo.InsertUser(ctx, tx, &model.Users{
+			Name:     req.Name,
+			Email:    req.Email,
+			Password: hashPassword,
+			IsSeller: false,
+		})
+		if err != nil {
+			return err
+		}
+		return nil
 	})
+
 	if err != nil {
 		return nil, err
 	}

@@ -11,6 +11,8 @@ type DatabaseRepository struct {
 	pgClient *pgxpool.Pool
 }
 
+var client *pgxpool.Pool
+
 func NewDatabaseRepository(ctx context.Context, cfg *config.AppConfig) *DatabaseRepository {
 	// urlExample := "postgres://username:password@localhost:5432/database_name"
 	if cfg == nil {
@@ -30,7 +32,12 @@ func NewDatabaseRepository(ctx context.Context, cfg *config.AppConfig) *Database
 	if err != nil {
 		panic(fmt.Sprintf("error while connect to db client, err=%v", err))
 	}
+	client = conn
 	return &DatabaseRepository{
 		pgClient: conn,
 	}
+}
+
+func GetDBClient() *pgxpool.Pool {
+	return client
 }
