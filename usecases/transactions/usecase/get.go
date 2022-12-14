@@ -81,7 +81,9 @@ func (u usecaseTransactionsGet) buildResponse(t []*model.Transactions, s map[int
 				tx.ProductName = x.ProductName
 				tx.ProductPic = x.ProductPic
 				if len(s[v.ID]) > 1 {
-					tx.AnotherProduct = fmt.Sprintf("%v produk lainnya", len(s[v.ID])+1)
+					tx.AnotherProduct = fmt.Sprintf("%v produk lainnya", len(s[v.ID])-1)
+				} else {
+					tx.AnotherProduct = fmt.Sprintf("Kamu hanya membeli produk ini")
 				}
 			}
 
@@ -104,7 +106,8 @@ func (u usecaseTransactionsGet) buildResponse(t []*model.Transactions, s map[int
 		txDetail.TransactionProducts = txProducts
 
 		tx.TransactionID = v.ID
-		tx.Date = v.Date.Format("2 January 2006, 15:04:05")
+		tx.Date = formatter.ToTimezoneJakarta(v.CreatedDate).Format("2 January 2006, 15:04:05")
+		tx.TransactionDetails = txDetail
 
 		txList = append(txList, tx)
 	}

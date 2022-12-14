@@ -2,6 +2,8 @@ package usecase
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"github.com/jackc/pgx/v5"
 	"time"
 	"tokowiwin/repositories/db"
@@ -17,12 +19,11 @@ type usecaseTransactionsInsert struct {
 }
 
 type requestInsert struct {
-	ID              int64  `db:"id"`
-	UserID          int64  `db:"user_id"`
-	ReceiverName    string `db:"receiver_name"`
-	ReceiverPhone   string `db:"receiver_phone"`
-	ReceiverAddress string `db:"receiver_address"`
-	PaymentType     string `db:"payment_type"`
+	UserID          int64  `json:"user_id"`
+	ReceiverName    string `json:"receiver_name"`
+	ReceiverPhone   string `json:"receiver_phone"`
+	ReceiverAddress string `json:"receiver_address"`
+	PaymentType     string `json:"payment_type"`
 }
 
 type responseInsert struct {
@@ -51,11 +52,37 @@ func (u usecaseTransactionsInsert) HandleUsecase(ctx context.Context, data useca
 	if err != nil {
 		return nil, err
 	}
+
+	if req.PaymentType != model.PaymentTypeCOD && req.PaymentType != model.PaymentTypeManualTransfer {
+		return nil, errors.New(fmt.Sprintf("payment type only accept for %v, %v", model.PaymentTypeCOD, model.PaymentTypeManualTransfer))
+	}
+
+	carts, err := u.repo.GetCart(ctx, req.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(carts) == 0 {
+		return nil, errors.New("cart is empty, no product need to checkout")
+	}
+
+	productIDs := helper.GetProductIDs(carts)
+
+	products, err := u.repo.GetProductsByIDsMapped(ctx, productIDs)
+	if err != nil {
+		return nil, err
+	}
+
 	err = db.ExecuteWithTx(ctx, data.TxExecutor, func(tx pgx.Tx) error {
 		var (
-			err error
-			id  int64
+			err    error
+			id     int64
+			status = model.StatusBelumDibayar
 		)
+
+		if req.PaymentType == model.PaymentTypeCOD {
+			status = model.PaymentTypeCOD
+		}
 
 		id, err = u.repo.InsertTransaction(ctx, tx, &model.Transactions{
 			UserID:          req.UserID,
@@ -63,21 +90,9 @@ func (u usecaseTransactionsInsert) HandleUsecase(ctx context.Context, data useca
 			ReceiverPhone:   req.ReceiverPhone,
 			ReceiverAddress: req.ReceiverAddress,
 			PaymentType:     req.PaymentType,
-			Status:          model.StatusBelumDibayar,
-			Date:            time.Now().UTC(),
+			Status:          status,
+			CreatedDate:     time.Now().UTC(),
 		})
-		if err != nil {
-			return err
-		}
-
-		carts, err := u.repo.GetCart(ctx, req.UserID)
-		if err != nil {
-			return err
-		}
-
-		productIDs := helper.GetProductIDs(carts)
-
-		products, err := u.repo.GetProductsByIDsMapped(ctx, productIDs)
 		if err != nil {
 			return err
 		}
@@ -107,11 +122,21 @@ func (u usecaseTransactionsInsert) HandleUsecase(ctx context.Context, data useca
 				ProductPrice:  productPrice,
 				Qty:           productQty,
 			})
-
 			if err != nil {
 				return err
 			}
+
 		}
+
+		if err != nil {
+			return err
+		}
+
+		err = u.repo.DeleteAllCartByUserID(ctx, tx, req.UserID)
+		if err != nil {
+			return err
+		}
+
 		return nil
 	})
 

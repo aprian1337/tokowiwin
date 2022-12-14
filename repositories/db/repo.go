@@ -30,6 +30,7 @@ type RepositoryI interface {
 	InsertCart(ctx context.Context, tx pgx.Tx, cart *model.Carts) error
 	UpdateCart(ctx context.Context, tx pgx.Tx, cart *model.Carts) error
 	DeleteCart(ctx context.Context, tx pgx.Tx, id int64) error
+	DeleteAllCartByUserID(ctx context.Context, tx pgx.Tx, userId int64) error
 
 	GetProductsAll(ctx context.Context, columns ...any) ([]*model.Products, error)
 	GetProductsByID(ctx context.Context, id int64, columns ...any) (*model.Products, error)
@@ -52,7 +53,7 @@ func (r *DatabaseRepository) GetSnapshotsByIDs(ctx context.Context, ids []int64,
 	}
 
 	columnsStr := array.ToStringWithDelimiter(columns, ",")
-	query := strings.ReplaceAll(modelDb.QueryGetByIDs(), constants.DbCols, columnsStr)
+	query := strings.ReplaceAll(modelDb.QueryGetByTransactionIDs(), constants.DbCols, columnsStr)
 
 	rows, err := r.pgClient.Query(ctx, query, pq.Array(ids))
 	if err != nil {
@@ -66,12 +67,14 @@ func (r *DatabaseRepository) GetSnapshotsByIDs(ctx context.Context, ids []int64,
 
 		err = rows.Scan(structs.GetAddressByFieldTag(temp, constants.DbTag, converts.AnyArrayToString(columns))...)
 		if err != nil {
-			log.Fatal(err)
+			log.Default().Println(fmt.Sprintf("error=%v, query=%v", err, query))
+			return nil, err
 		}
 		result = append(result, temp)
 	}
 	if err = rows.Err(); err != nil {
-		log.Fatal(err)
+		log.Default().Println(fmt.Sprintf("error=%v, query=%v", err, query))
+		return nil, err
 	}
 
 	return result, nil
@@ -114,12 +117,14 @@ func (r *DatabaseRepository) GetSnapshot(ctx context.Context, txId int64, column
 
 		err = rows.Scan(structs.GetAddressByFieldTag(temp, constants.DbTag, converts.AnyArrayToString(columns))...)
 		if err != nil {
-			log.Fatal(err)
+			log.Default().Println(fmt.Sprintf("error=%v, query=%v", err, query))
+			return nil, err
 		}
 		result = append(result, temp)
 	}
 	if err = rows.Err(); err != nil {
-		log.Fatal(err)
+		log.Default().Println(fmt.Sprintf("error=%v, query=%v", err, query))
+		return nil, err
 	}
 
 	return result, nil
@@ -148,12 +153,14 @@ func (r *DatabaseRepository) GetTransaction(ctx context.Context, userId int64, c
 
 		err = rows.Scan(structs.GetAddressByFieldTag(temp, constants.DbTag, converts.AnyArrayToString(columns))...)
 		if err != nil {
-			log.Fatal(err)
+			log.Default().Println(fmt.Sprintf("error=%v, query=%v", err, query))
+			return nil, err
 		}
 		result = append(result, temp)
 	}
 	if err = rows.Err(); err != nil {
-		log.Fatal(err)
+		log.Default().Println(fmt.Sprintf("error=%v, query=%v", err, query))
+		return nil, err
 	}
 
 	return result, nil
@@ -182,12 +189,14 @@ func (r *DatabaseRepository) GetCart(ctx context.Context, userId int64, columns 
 
 		err = rows.Scan(structs.GetAddressByFieldTag(temp, constants.DbTag, converts.AnyArrayToString(columns))...)
 		if err != nil {
-			log.Fatal(err)
+			log.Default().Println(fmt.Sprintf("error=%v, query=%v", err, query))
+			return nil, err
 		}
 		result = append(result, temp)
 	}
 	if err = rows.Err(); err != nil {
-		log.Fatal(err)
+		log.Default().Println(fmt.Sprintf("error=%v, query=%v", err, query))
+		return nil, err
 	}
 
 	return result, nil
@@ -216,12 +225,14 @@ func (r *DatabaseRepository) GetProductsAll(ctx context.Context, columns ...any)
 
 		err = rows.Scan(structs.GetAddressByFieldTag(temp, constants.DbTag, converts.AnyArrayToString(columns))...)
 		if err != nil {
-			log.Fatal(err)
+			log.Default().Println(fmt.Sprintf("error=%v, query=%v", err, query))
+			return nil, err
 		}
 		result = append(result, temp)
 	}
 	if err = rows.Err(); err != nil {
-		log.Fatal(err)
+		log.Default().Println(fmt.Sprintf("error=%v, query=%v", err, query))
+		return nil, err
 	}
 
 	return result, nil
@@ -253,12 +264,14 @@ func (r *DatabaseRepository) GetProductsByIDs(ctx context.Context, ids []int64, 
 
 		err = rows.Scan(structs.GetAddressByFieldTag(temp, constants.DbTag, converts.AnyArrayToString(columns))...)
 		if err != nil {
-			log.Fatal(err)
+			log.Default().Println(fmt.Sprintf("error=%v, query=%v", err, query))
+			return nil, err
 		}
 		result = append(result, temp)
 	}
 	if err = rows.Err(); err != nil {
-		log.Fatal(err)
+		log.Default().Println(fmt.Sprintf("error=%v, query=%v", err, query))
+		return nil, err
 	}
 
 	return result, nil
@@ -337,6 +350,27 @@ func (r *DatabaseRepository) DeleteCart(ctx context.Context, tx pgx.Tx, id int64
 	}
 
 	_, err = tx.Exec(ctx, m.QueryDelete(), id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *DatabaseRepository) DeleteAllCartByUserID(ctx context.Context, tx pgx.Tx, userId int64) error {
+	var (
+		err error
+		m   = model.Carts{}
+	)
+
+	if tx == nil {
+		tx, err = r.pgClient.Begin(ctx)
+		if err != nil {
+			return err
+		}
+	}
+
+	_, err = tx.Exec(ctx, m.QueryDeleteByUserID(), userId)
 	if err != nil {
 		return err
 	}
@@ -498,6 +532,7 @@ func (r *DatabaseRepository) InsertTransaction(ctx context.Context, tx pgx.Tx, t
 	query := strings.ReplaceAll(modelDb.QueryInsert(), constants.DbCols, columnsStr)
 	err = tx.QueryRow(ctx, query, structs.GetAddressByFieldTag(transaction, constants.DbTag, converts.AnyArrayToString(columns))...).Scan(&id)
 	if err != nil {
+		fmt.Println("ERR", err)
 		return id, err
 	}
 

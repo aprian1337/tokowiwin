@@ -29,10 +29,8 @@ func ExecuteWithTx(ctx context.Context, executor TxExecutor, fn Tx) error {
 			return err
 		}
 	} else {
-		err = tx.Rollback(ctx)
-		if err != nil {
-			return err
-		}
+		_ = tx.Rollback(ctx)
+		return err
 	}
 	return nil
 }

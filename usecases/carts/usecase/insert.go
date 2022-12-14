@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"github.com/jackc/pgx/v5"
 	"tokowiwin/repositories/db"
 	"tokowiwin/repositories/model"
@@ -47,6 +48,11 @@ func (u usecaseCartssInsert) HandleUsecase(ctx context.Context, data usecases.Ha
 	if err != nil {
 		return nil, err
 	}
+	_, err = u.repo.GetProductsByID(ctx, req.ProductID)
+	if err != nil {
+		return nil, fmt.Errorf("[GetProductsByID] %v", err)
+	}
+
 	err = db.ExecuteWithTx(ctx, data.TxExecutor, func(tx pgx.Tx) error {
 		err = u.repo.InsertCart(ctx, tx, &model.Carts{
 			ProductID: sql.NullInt64{

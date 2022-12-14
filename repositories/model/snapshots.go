@@ -16,6 +16,6 @@ func (m Snapshots) QueryGet() string {
 	return "SELECT ${cols} FROM snapshots WHERE transaction_id=$1"
 }
 
-func (m Snapshots) QueryGetByIDs() string {
-	return "SELECT ${cols} FROM snapshots WHERE id=ANY($1::int[])"
+func (m Snapshots) QueryGetByTransactionIDs() string {
+	return "SELECT ${cols} FROM snapshots WHERE transaction_id=ANY($1::int[])"
 }

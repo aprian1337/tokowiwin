@@ -2,7 +2,11 @@ package constants
 
 // constant for db related
 const (
-	DbTag   = "db"
-	DbCols  = "${cols}"
-	DbArgs1 = "$1"
+	DbTag  = "db"
+	DbCols = "${cols}"
+)
+
+// constant for timezone
+const (
+	TimezoneAsiaJakarta = "Asia/Jakarta"
 )

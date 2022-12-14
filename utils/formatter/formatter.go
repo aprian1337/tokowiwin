@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+	"time"
+	"tokowiwin/constants"
 )
 
 func Int64ToRupiah(amount int64) string {
@@ -15,8 +17,13 @@ func Int64ToRupiah(amount int64) string {
 	}
 	if amount < 0 {
 		s = strings.Replace(s, "-", "", -1)
-		return fmt.Sprintf("-Rp%s,00", s)
+		return fmt.Sprintf("-Rp%s", s)
 	}
 
-	return fmt.Sprintf("Rp%s,00", s)
+	return fmt.Sprintf("Rp%s", s)
+}
+
+func ToTimezoneJakarta(t time.Time) time.Time {
+	location, _ := time.LoadLocation(constants.TimezoneAsiaJakarta)
+	return t.In(location)
 }
