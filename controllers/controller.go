@@ -75,3 +75,59 @@ func (ct *Controller) ProductsUpdateController(c *fiber.Ctx) error {
 	}
 	return c.JSON(data)
 }
+
+func (ct *Controller) CartsGetController(c *fiber.Ctx) error {
+	data, err := ct.Handler.HandleUsecase(ct.buildParamHandleUsecase(c))
+	if err != nil {
+		return BaseErrorResponse(c, err, http.StatusInternalServerError)
+	}
+	return c.JSON(data)
+}
+
+func (ct *Controller) CartsInsertController(c *fiber.Ctx) error {
+	data, err := ct.Handler.HandleUsecase(ct.buildParamHandleUsecase(c))
+	if err != nil {
+		return BaseErrorResponse(c, err, http.StatusInternalServerError)
+	}
+	return c.JSON(data)
+}
+
+func (ct *Controller) CartsDeleteController(c *fiber.Ctx) error {
+	data, err := ct.Handler.HandleUsecase(ct.buildParamHandleUsecase(c))
+	if err != nil {
+		return BaseErrorResponse(c, err, http.StatusInternalServerError)
+	}
+	return c.JSON(data)
+}
+
+func (ct *Controller) CartsUpdateController(c *fiber.Ctx) error {
+	data, err := ct.Handler.HandleUsecase(ct.buildParamHandleUsecase(c))
+	if err != nil {
+		return BaseErrorResponse(c, err, http.StatusInternalServerError)
+	}
+	return c.JSON(data)
+}
+
+func (ct *Controller) TransactionsUpdateController(c *fiber.Ctx) error {
+	data, err := ct.Handler.HandleUsecase(ct.buildParamHandleUsecase(c))
+	if err != nil {
+		return BaseErrorResponse(c, err, http.StatusInternalServerError)
+	}
+	return c.JSON(data)
+}
+
+func (ct *Controller) TransactionsInsertController(c *fiber.Ctx) error {
+	data, err := ct.Handler.HandleUsecase(ct.buildParamHandleUsecase(c))
+	if err != nil {
+		return BaseErrorResponse(c, err, http.StatusInternalServerError)
+	}
+	return c.JSON(data)
+}
+
+func (ct *Controller) TransactionsGetController(c *fiber.Ctx) error {
+	data, err := ct.Handler.HandleUsecase(ct.buildParamHandleUsecase(c))
+	if err != nil {
+		return BaseErrorResponse(c, err, http.StatusInternalServerError)
+	}
+	return c.JSON(data)
+}

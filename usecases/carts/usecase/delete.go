@@ -8,7 +8,7 @@ import (
 )
 
 type UCDelete struct{}
-type usecaseProductsDelete struct {
+type usecaseCartsDelete struct {
 	ctx  context.Context
 	repo db.RepositoryI
 }
@@ -22,14 +22,14 @@ type responseDelete struct {
 	Message string `json:"message"`
 }
 
-func (c UCDelete) NewUsecase(ctx context.Context, repo db.RepositoryI) *usecaseProductsDelete {
-	return &usecaseProductsDelete{
+func (c UCDelete) NewUsecase(ctx context.Context, repo db.RepositoryI) *usecaseCartsDelete {
+	return &usecaseCartsDelete{
 		ctx:  ctx,
 		repo: repo,
 	}
 }
 
-func (u usecaseProductsDelete) HandleUsecase(ctx context.Context, data usecases.HandleUsecaseData) (interface{}, error) {
+func (u usecaseCartsDelete) HandleUsecase(ctx context.Context, data usecases.HandleUsecaseData) (interface{}, error) {
 	var (
 		err  error
 		req  = new(requestDelete)
@@ -44,7 +44,7 @@ func (u usecaseProductsDelete) HandleUsecase(ctx context.Context, data usecases.
 		return nil, err
 	}
 	err = db.ExecuteWithTx(ctx, data.TxExecutor, func(tx pgx.Tx) error {
-		err = u.repo.DeleteProduct(ctx, tx, req.ID)
+		err = u.repo.DeleteCart(ctx, tx, req.ID)
 		if err != nil {
 			return err
 		}

@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"database/sql"
 	"github.com/jackc/pgx/v5"
 	"tokowiwin/repositories/db"
 	"tokowiwin/repositories/model"
@@ -9,16 +10,15 @@ import (
 )
 
 type UCInsert struct{}
-type usecaseProductsInsert struct {
+type usecaseCartssInsert struct {
 	ctx  context.Context
 	repo db.RepositoryI
 }
 
 type requestInsert struct {
-	ProductName  string `json:"product_name"`
-	ProductPic   string `json:"product_pic"`
-	ProductStock int    `json:"product_stock"`
-	ProductPrice int    `json:"product_price"`
+	ProductID int64 `json:"product_id"`
+	UserID    int64 `json:"user_id"`
+	Qty       int64 `json:"qty"`
 }
 
 type responseInsert struct {
@@ -26,14 +26,14 @@ type responseInsert struct {
 	Message string `json:"message"`
 }
 
-func (c UCInsert) NewUsecase(ctx context.Context, repo db.RepositoryI) *usecaseProductsInsert {
-	return &usecaseProductsInsert{
+func (c UCInsert) NewUsecase(ctx context.Context, repo db.RepositoryI) *usecaseCartssInsert {
+	return &usecaseCartssInsert{
 		ctx:  ctx,
 		repo: repo,
 	}
 }
 
-func (u usecaseProductsInsert) HandleUsecase(ctx context.Context, data usecases.HandleUsecaseData) (interface{}, error) {
+func (u usecaseCartssInsert) HandleUsecase(ctx context.Context, data usecases.HandleUsecaseData) (interface{}, error) {
 	var (
 		err  error
 		req  = new(requestInsert)
@@ -48,11 +48,16 @@ func (u usecaseProductsInsert) HandleUsecase(ctx context.Context, data usecases.
 		return nil, err
 	}
 	err = db.ExecuteWithTx(ctx, data.TxExecutor, func(tx pgx.Tx) error {
-		err = u.repo.InsertProduct(ctx, tx, &model.Products{
-			ProductName:  req.ProductName,
-			ProductStock: req.ProductStock,
-			ProductPrice: req.ProductPrice,
-			ProductPic:   req.ProductPic,
+		err = u.repo.InsertCart(ctx, tx, &model.Carts{
+			ProductID: sql.NullInt64{
+				Int64: req.ProductID,
+				Valid: true,
+			},
+			UserID: req.UserID,
+			Qty: sql.NullInt64{
+				Int64: req.Qty,
+				Valid: true,
+			},
 		})
 		if err != nil {
 			return err

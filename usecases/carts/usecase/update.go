@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"database/sql"
 	"github.com/jackc/pgx/v5"
 	"tokowiwin/repositories/db"
 	"tokowiwin/repositories/model"
@@ -9,17 +10,15 @@ import (
 )
 
 type UCUpdate struct{}
-type usecaseProductsUpdate struct {
+type usecaseCartssUpdate struct {
 	ctx  context.Context
 	repo db.RepositoryI
 }
 
 type requestUpdate struct {
-	ID           int64  `json:"id"`
-	ProductName  string `json:"product_name"`
-	ProductPic   string `json:"product_pic"`
-	ProductStock int    `json:"product_stock"`
-	ProductPrice int    `json:"product_price"`
+	ProductID int64 `json:"product_id"`
+	UserID    int64 `json:"user_id"`
+	Qty       int64 `json:"qty"`
 }
 
 type responseUpdate struct {
@@ -27,14 +26,14 @@ type responseUpdate struct {
 	Message string `json:"message"`
 }
 
-func (c UCUpdate) NewUsecase(ctx context.Context, repo db.RepositoryI) *usecaseProductsUpdate {
-	return &usecaseProductsUpdate{
+func (c UCUpdate) NewUsecase(ctx context.Context, repo db.RepositoryI) *usecaseCartssUpdate {
+	return &usecaseCartssUpdate{
 		ctx:  ctx,
 		repo: repo,
 	}
 }
 
-func (u usecaseProductsUpdate) HandleUsecase(ctx context.Context, data usecases.HandleUsecaseData) (interface{}, error) {
+func (u usecaseCartssUpdate) HandleUsecase(ctx context.Context, data usecases.HandleUsecaseData) (interface{}, error) {
 	var (
 		err  error
 		req  = new(requestUpdate)
@@ -49,12 +48,16 @@ func (u usecaseProductsUpdate) HandleUsecase(ctx context.Context, data usecases.
 		return nil, err
 	}
 	err = db.ExecuteWithTx(ctx, data.TxExecutor, func(tx pgx.Tx) error {
-		err = u.repo.UpdateProduct(ctx, tx, &model.Products{
-			ID:           req.ID,
-			ProductName:  req.ProductName,
-			ProductStock: req.ProductStock,
-			ProductPrice: req.ProductPrice,
-			ProductPic:   req.ProductPic,
+		err = u.repo.UpdateCart(ctx, tx, &model.Carts{
+			ProductID: sql.NullInt64{
+				Int64: req.ProductID,
+				Valid: true,
+			},
+			UserID: req.UserID,
+			Qty: sql.NullInt64{
+				Int64: req.Qty,
+				Valid: true,
+			},
 		})
 		if err != nil {
 			return err

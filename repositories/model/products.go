@@ -16,6 +16,18 @@ func (m Products) QueryGetByID() string {
 	return "SELECT ${cols} FROM products WHERE id=$1"
 }
 
+func (m Products) QueryGetByIDs() string {
+	return "SELECT ${cols} FROM products WHERE id=ANY($1::int[])"
+}
+
 func (m Products) QueryInsert() string {
 	return "INSERT INTO products (${cols}) VALUES ($1, $2, $3, $4)"
+}
+
+func (m Products) QueryUpdate() string {
+	return "UPDATE products SET ${cols} WHERE id = $1"
+}
+
+func (m Products) QueryDelete() string {
+	return "DELETE FROM products WHERE id = $1"
 }

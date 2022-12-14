@@ -13,5 +13,5 @@ func (m Users) QueryGetByEmail() string {
 }
 
 func (m Users) QueryInsert() string {
-	return "INSERT INTO users (${cols}) VALUES ($1, $2, $3, $4)"
+	return "INSERT INTO users (${cols}) VALUES ($1, $2, $3, $4) RETURNING id"
 }

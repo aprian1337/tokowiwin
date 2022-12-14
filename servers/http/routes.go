@@ -12,10 +12,20 @@ import (
 type DeliveryHTTP struct {
 	UsersAuthentication *controllers.Controller
 	UsersRegister       *controllers.Controller
-	ProductsGet         *controllers.Controller
-	ProductsInsert      *controllers.Controller
-	ProductsUpdate      *controllers.Controller
-	ProductsDelete      *controllers.Controller
+
+	ProductsGet    *controllers.Controller
+	ProductsInsert *controllers.Controller
+	ProductsUpdate *controllers.Controller
+	ProductsDelete *controllers.Controller
+
+	CartsGet    *controllers.Controller
+	CartsInsert *controllers.Controller
+	CartsUpdate *controllers.Controller
+	CartsDelete *controllers.Controller
+
+	TransactionsGet    *controllers.Controller
+	TransactionsInsert *controllers.Controller
+	TransactionsUpdate *controllers.Controller
 }
 
 func (h DeliveryHTTP) InitHTTPClient(cfg *config.AppConfig) {
@@ -27,6 +37,14 @@ func (h DeliveryHTTP) InitHTTPClient(cfg *config.AppConfig) {
 	app.Post("/products", h.ProductsInsert.ProductsInsertController)
 	app.Delete("/products", h.ProductsDelete.ProductsDeleteController)
 	app.Put("/products", h.ProductsUpdate.ProductsUpdateController)
+
+	app.Get("/carts", h.CartsGet.CartsGetController)
+	app.Post("/carts", h.CartsInsert.CartsInsertController)
+	app.Delete("/carts", h.CartsDelete.CartsDeleteController)
+	app.Put("/carts", h.CartsUpdate.CartsUpdateController)
+
+	app.Get("/transactions", h.TransactionsGet.TransactionsGetController)
+	app.Post("/transactions", h.TransactionsInsert.TransactionsInsertController)
 	err := app.Listen(cfg.Server.Address)
 	if err != nil {
 		panic(fmt.Sprintf("error while start the http client, err=%v", err))

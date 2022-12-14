@@ -26,6 +26,15 @@ func ToStringWithDelimiter(arr []any, delimiter string) string {
 	return res
 }
 
+func Int64ToString(arr []int64) []string {
+	var res []string
+	for _, v := range arr {
+		str := strconv.FormatInt(v, 10)
+		res = append(res, str)
+	}
+	return res
+}
+
 func Contains[T comparable](s []T, e T) bool {
 	for _, v := range s {
 		if v == e {

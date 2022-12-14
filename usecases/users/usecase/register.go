@@ -23,6 +23,7 @@ func (c UCRegister) NewUsecase(ctx context.Context, repo db.RepositoryI) *usecas
 }
 
 type responseRegister struct {
+	ID      int64  `json:"id"`
 	Success int    `json:"success"`
 	Message string `json:"message"`
 }
@@ -37,6 +38,7 @@ func (u usecaseUserRegister) HandleUsecase(ctx context.Context, data usecases.Ha
 	var (
 		req = new(requestRegister)
 		err error
+		id  int64
 	)
 
 	if err = data.HTTPData.BodyParser(req); err != nil {
@@ -49,7 +51,7 @@ func (u usecaseUserRegister) HandleUsecase(ctx context.Context, data usecases.Ha
 
 	hashPassword := hash.HashPassword(req.Password)
 	err = db.ExecuteWithTx(ctx, data.TxExecutor, func(tx pgx.Tx) error {
-		err = u.repo.InsertUser(ctx, tx, &model.Users{
+		id, err = u.repo.InsertUser(ctx, tx, &model.Users{
 			Name:     req.Name,
 			Email:    req.Email,
 			Password: hashPassword,
@@ -66,6 +68,7 @@ func (u usecaseUserRegister) HandleUsecase(ctx context.Context, data usecases.Ha
 	}
 
 	return responseRegister{
+		ID:      id,
 		Success: 1,
 		Message: "Berhasil",
 	}, nil
