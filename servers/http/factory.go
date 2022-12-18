@@ -22,7 +22,7 @@ func InitFactoryHTTP(ctx context.Context, cfg *config.AppConfig) {
 
 	//Products Module
 	h.ProductsGet = AddController(products.UCGet{}.NewUsecase(ctx, dbRepo), validate)
-	h.ProductsInsert = AddController(carts.UCInsert{}.NewUsecase(ctx, dbRepo), validate)
+	h.ProductsInsert = AddController(products.UCInsert{}.NewUsecase(ctx, dbRepo), validate)
 	h.ProductsUpdate = AddController(products.UCUpdate{}.NewUsecase(ctx, dbRepo), validate)
 	h.ProductsDelete = AddController(products.UCDelete{}.NewUsecase(ctx, dbRepo), validate)
 
