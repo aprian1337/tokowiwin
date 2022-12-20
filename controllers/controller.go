@@ -33,7 +33,7 @@ func (ct *Controller) AuthenticationController(c *fiber.Ctx) error {
 	if err != nil {
 		return BaseErrorResponse(c, err, http.StatusInternalServerError)
 	}
-	return c.JSON(data)
+	return BaseSuccessResponse(c, data)
 }
 
 func (ct *Controller) RegisterController(c *fiber.Ctx) error {
@@ -41,7 +41,7 @@ func (ct *Controller) RegisterController(c *fiber.Ctx) error {
 	if err != nil {
 		return BaseErrorResponse(c, err, http.StatusInternalServerError)
 	}
-	return c.JSON(data)
+	return BaseSuccessResponse(c, data)
 }
 
 func (ct *Controller) ProductsGetController(c *fiber.Ctx) error {
@@ -49,7 +49,7 @@ func (ct *Controller) ProductsGetController(c *fiber.Ctx) error {
 	if err != nil {
 		return BaseErrorResponse(c, err, http.StatusInternalServerError)
 	}
-	return c.JSON(data)
+	return BaseSuccessResponse(c, data)
 }
 
 func (ct *Controller) ProductsInsertController(c *fiber.Ctx) error {
@@ -57,7 +57,7 @@ func (ct *Controller) ProductsInsertController(c *fiber.Ctx) error {
 	if err != nil {
 		return BaseErrorResponse(c, err, http.StatusInternalServerError)
 	}
-	return c.JSON(data)
+	return BaseSuccessResponse(c, data)
 }
 
 func (ct *Controller) ProductsDeleteController(c *fiber.Ctx) error {
@@ -65,7 +65,7 @@ func (ct *Controller) ProductsDeleteController(c *fiber.Ctx) error {
 	if err != nil {
 		return BaseErrorResponse(c, err, http.StatusInternalServerError)
 	}
-	return c.JSON(data)
+	return BaseSuccessResponse(c, data)
 }
 
 func (ct *Controller) ProductsUpdateController(c *fiber.Ctx) error {
@@ -73,7 +73,7 @@ func (ct *Controller) ProductsUpdateController(c *fiber.Ctx) error {
 	if err != nil {
 		return BaseErrorResponse(c, err, http.StatusInternalServerError)
 	}
-	return c.JSON(data)
+	return BaseSuccessResponse(c, data)
 }
 
 func (ct *Controller) CartsGetController(c *fiber.Ctx) error {
@@ -81,7 +81,7 @@ func (ct *Controller) CartsGetController(c *fiber.Ctx) error {
 	if err != nil {
 		return BaseErrorResponse(c, err, http.StatusInternalServerError)
 	}
-	return c.JSON(data)
+	return BaseSuccessResponse(c, data)
 }
 
 func (ct *Controller) CartsInsertController(c *fiber.Ctx) error {
@@ -89,7 +89,7 @@ func (ct *Controller) CartsInsertController(c *fiber.Ctx) error {
 	if err != nil {
 		return BaseErrorResponse(c, err, http.StatusInternalServerError)
 	}
-	return c.JSON(data)
+	return BaseSuccessResponse(c, data)
 }
 
 func (ct *Controller) CartsDeleteController(c *fiber.Ctx) error {
@@ -97,7 +97,7 @@ func (ct *Controller) CartsDeleteController(c *fiber.Ctx) error {
 	if err != nil {
 		return BaseErrorResponse(c, err, http.StatusInternalServerError)
 	}
-	return c.JSON(data)
+	return BaseSuccessResponse(c, data)
 }
 
 func (ct *Controller) CartsUpdateController(c *fiber.Ctx) error {
@@ -105,7 +105,7 @@ func (ct *Controller) CartsUpdateController(c *fiber.Ctx) error {
 	if err != nil {
 		return BaseErrorResponse(c, err, http.StatusInternalServerError)
 	}
-	return c.JSON(data)
+	return BaseSuccessResponse(c, data)
 }
 
 func (ct *Controller) TransactionsUpdateController(c *fiber.Ctx) error {
@@ -113,7 +113,7 @@ func (ct *Controller) TransactionsUpdateController(c *fiber.Ctx) error {
 	if err != nil {
 		return BaseErrorResponse(c, err, http.StatusInternalServerError)
 	}
-	return c.JSON(data)
+	return BaseSuccessResponse(c, data)
 }
 
 func (ct *Controller) TransactionsInsertController(c *fiber.Ctx) error {
@@ -121,7 +121,7 @@ func (ct *Controller) TransactionsInsertController(c *fiber.Ctx) error {
 	if err != nil {
 		return BaseErrorResponse(c, err, http.StatusInternalServerError)
 	}
-	return c.JSON(data)
+	return BaseSuccessResponse(c, data)
 }
 
 func (ct *Controller) TransactionsGetController(c *fiber.Ctx) error {
@@ -129,5 +129,5 @@ func (ct *Controller) TransactionsGetController(c *fiber.Ctx) error {
 	if err != nil {
 		return BaseErrorResponse(c, err, http.StatusInternalServerError)
 	}
-	return c.JSON(data)
+	return BaseSuccessResponse(c, data)
 }

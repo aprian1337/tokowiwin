@@ -15,10 +15,10 @@ type usecaseCartssInsert struct {
 }
 
 type requestInsert struct {
-	ProductName  string `json:"product_name"`
-	ProductPrice int    `json:"product_price"`
-	ProductStock int    `json:"product_stock"`
-	ProductPic   string `json:"product_pic"`
+	ProductName  string `json:"product_name" validate:"required"`
+	ProductPrice int    `json:"product_price" validate:"required"`
+	ProductStock int    `json:"product_stock" validate:"required"`
+	ProductPic   string `json:"product_pic" validate:"required"`
 }
 
 type responseInsert struct {
