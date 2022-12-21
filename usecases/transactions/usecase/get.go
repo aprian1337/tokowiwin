@@ -38,8 +38,8 @@ func (u usecaseTransactionsGet) HandleUsecase(ctx context.Context, data usecases
 		err error
 	)
 
-	if len(data.HTTPData.Body()) != 0 {
-		if err = data.HTTPData.BodyParser(req); err != nil {
+	if data.HTTPData.Query("user_id") != "" {
+		if err = data.HTTPData.QueryParser(req); err != nil {
 			return nil, err
 		}
 		err = data.Validator.Struct(*req)
