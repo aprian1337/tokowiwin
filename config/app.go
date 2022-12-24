@@ -37,7 +37,6 @@ func InitAppConfig() {
 		appConfig = new(AppConfig)
 		err       error
 	)
-
 	jsonFile, err := os.Open("./config.json")
 	if err != nil {
 		panic(fmt.Sprintf("error while open config file, err=%v", err))

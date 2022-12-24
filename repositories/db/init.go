@@ -23,14 +23,15 @@ func NewDatabaseRepository(ctx context.Context, cfg *config.AppConfig) *Database
 			fmt.Println("Panic occured", r)
 		}
 	}()
-	username := cfg.Database.User
-	password := cfg.Database.Pass
-	host := cfg.Database.Host
-	dbname := cfg.Database.Name
-	url := fmt.Sprintf("postgres://%v:%v@%v/%v", username, password, host, dbname)
+	dbConfig := cfg.Database
+	url := fmt.Sprintf("postgres://%v:%v@%v/%v", dbConfig.User, dbConfig.Pass, dbConfig.Host, dbConfig.Name)
 	conn, err := pgxpool.New(ctx, url)
 	if err != nil {
 		panic(fmt.Sprintf("error while connect to db client, err=%v", err))
+	}
+	_, err = conn.Acquire(ctx)
+	if err != nil {
+		return nil
 	}
 	client = conn
 	return &DatabaseRepository{

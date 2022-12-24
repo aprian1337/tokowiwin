@@ -1,0 +1,30 @@
+name: Deployment to EC2 Server
+
+on:
+  pull_request:
+    branches:
+      - 'main'
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  deploy-to-ec2:
+    name: "Connect to EC2 & Deploy to Server"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy
+        uses: appleboy/ssh-action@master
+        env:
+          CONFIG_PROD: ${{ secrets.CONFIG_PROD }}
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          envs: CONFIG_PROD
+          script: |
+            cd tokowiwin
+            echo "$CONFIG_PROD" > config.json
+            git pull origin main
+            sudo go build -o /usr/local/bin/tokowiwin-http tokowiwin/cmd/http && sudo systemctl restart tokowiwin-http
