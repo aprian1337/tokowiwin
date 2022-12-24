@@ -18,7 +18,7 @@ type successResponse struct {
 
 func BaseErrorResponse(fctx *fiber.Ctx, err error, statusCode int) error {
 	return fctx.JSON(errorResponse{
-		ErrorMessage:     "Aplikasi sedang ada masalah, silakan coba lagi dalam waktu berkala.",
+		ErrorMessage:     "Aplikasi sedang ada masalah, silakan coba lagi dalam waktu dekat.",
 		DeveloperMessage: err.Error(),
 		Status:           statusCode,
 	})
