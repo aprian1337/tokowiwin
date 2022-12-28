@@ -21,11 +21,7 @@ func main() {
 	signal.Notify(sigs)
 	go func() {
 		for sig := range sigs {
-			log.Printf("Received Signal: %s", sig)
-			switch sig {
-			case syscall.SIGURG:
-				log.Printf("Except Sigurg")
-			default:
+			if sig != syscall.SIGURG {
 				log.Printf("Stopping tokowiwin-http service...")
 				os.Exit(1)
 			}
