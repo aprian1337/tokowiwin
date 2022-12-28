@@ -14,7 +14,7 @@ type usecaseCartsGet struct {
 }
 
 type requestGet struct {
-	UserID int64 `json:"user_id" validate:"required,numeric"`
+	UserID int64 `json:"user_id" validate:"numeric"`
 }
 
 type responseGet struct {

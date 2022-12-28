@@ -39,7 +39,7 @@ func (h DeliveryHTTP) InitHTTPClient(cfg *config.AppConfig) {
 	app.Use(logger.New(logger.Config{
 		Next:         nil,
 		Done:         nil,
-		Format:       "[${time}] ${status} - ${latency} ${method} ${path} - ${reqHeaders} - ${body} - ${resBody}\n",
+		Format:       "[${time}] ${status} - ${latency} ${method} ${path} - ${reqHeaders} - ${queryParams} - ${body} - ${resBody}\n",
 		TimeFormat:   "02-Jan-2006 15:04:05",
 		TimeZone:     "Asia/Jakarta",
 		TimeInterval: 500 * time.Millisecond,

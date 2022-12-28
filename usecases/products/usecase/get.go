@@ -5,6 +5,7 @@ import (
 	"tokowiwin/repositories/db"
 	"tokowiwin/repositories/model"
 	"tokowiwin/usecases"
+	"tokowiwin/utils/formatter"
 )
 
 type UCGet struct{}
@@ -14,14 +15,15 @@ type usecaseProductsGet struct {
 }
 
 type requestGet struct {
-	ID int64 `json:"id" validate:"numeric"`
+	ID   int64  `json:"id"`
+	Name string `json:"name"`
 }
 
 type responseGet struct {
 	ID           int64  `json:"id"`
 	ProductName  string `json:"product_name"`
 	ProductStock int    `json:"product_stock"`
-	ProductPrice int    `json:"product_price"`
+	ProductPrice string `json:"product_price"`
 	ProductPic   string `json:"product_pic"`
 }
 
@@ -68,7 +70,7 @@ func (u usecaseProductsGet) buildResponse(m *model.Products) *responseGet {
 		ID:           m.ID,
 		ProductName:  m.ProductName,
 		ProductStock: m.ProductStock,
-		ProductPrice: m.ProductPrice,
+		ProductPrice: formatter.Int64ToRupiah(int64(m.ProductPrice)),
 		ProductPic:   m.ProductPic,
 	}
 }
