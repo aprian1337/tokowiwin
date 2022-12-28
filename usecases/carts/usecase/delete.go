@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"fmt"
 	"github.com/jackc/pgx/v5"
 	"tokowiwin/repositories/db"
 	"tokowiwin/usecases"
@@ -14,8 +15,8 @@ type usecaseCartsDelete struct {
 }
 
 type requestDelete struct {
-	ID     int64 `json:"id"`
-	UserID int64 `json:"user_id"`
+	ID     int64 `query:"product_id"`
+	UserID int64 `query:"user_id"`
 }
 
 type responseDelete struct {
@@ -37,13 +38,14 @@ func (u usecaseCartsDelete) HandleUsecase(ctx context.Context, data usecases.Han
 		resp = new(responseDelete)
 	)
 
-	if err = data.HTTPData.BodyParser(req); err != nil {
+	if err = data.HTTPData.QueryParser(req); err != nil {
 		return nil, err
 	}
 	err = data.Validator.Struct(*req)
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println("REQ", req)
 	err = db.ExecuteWithTx(ctx, data.TxExecutor, func(tx pgx.Tx) error {
 		err = u.repo.DeleteCart(ctx, tx, req.ID, req.UserID)
 		if err != nil {
@@ -57,7 +59,7 @@ func (u usecaseCartsDelete) HandleUsecase(ctx context.Context, data usecases.Han
 	}
 
 	resp.Success = 1
-	resp.Message = "Berhasil"
+	resp.Message = "Berhasil hapus keranjang"
 
 	return resp, nil
 }
