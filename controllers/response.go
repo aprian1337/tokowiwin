@@ -17,8 +17,12 @@ type successResponse struct {
 }
 
 func BaseErrorResponse(fctx *fiber.Ctx, err error, statusCode int) error {
+	errMsg := "Aplikasi sedang ada masalah, silakan coba lagi secara berkala.."
+	if err.Error() == "no rows in result set" {
+		errMsg = "Data tidak ditemukan.."
+	}
 	return fctx.JSON(errorResponse{
-		ErrorMessage:     "Aplikasi sedang ada masalah, silakan coba lagi secara berkala..",
+		ErrorMessage:     errMsg,
 		DeveloperMessage: err.Error(),
 		Status:           statusCode,
 	})
