@@ -5,6 +5,8 @@ import (
 	"tokowiwin/repositories/db"
 	"tokowiwin/repositories/model"
 	"tokowiwin/usecases"
+	"tokowiwin/usecases/carts"
+	"tokowiwin/utils/formatter"
 )
 
 type UCGet struct{}
@@ -14,16 +16,12 @@ type usecaseCartsGet struct {
 }
 
 type requestGet struct {
-	UserID int64 `json:"user_id" validate:"numeric"`
+	ID int64 `json:"id"`
 }
 
 type responseGet struct {
-	ID           int64  `json:"id"`
-	ProductName  string `json:"product_name"`
-	ProductStock int    `json:"product_stock"`
-	ProductPrice int    `json:"product_price"`
-	ProductPic   string `json:"product_pic"`
-	Qty          int64  `json:"qty"`
+	Data         []*carts.Carts `json:"data"`
+	TotalTagihan string         `json:"total_tagihan"`
 }
 
 func (c UCGet) NewUsecase(ctx context.Context, repo db.RepositoryI) *usecaseCartsGet {
@@ -39,7 +37,7 @@ func (u usecaseCartsGet) HandleUsecase(ctx context.Context, data usecases.Handle
 		err error
 	)
 
-	if data.HTTPData.Query("user_id") != "" {
+	if data.HTTPData.Query("id") != "" {
 		if err = data.HTTPData.QueryParser(req); err != nil {
 			return nil, err
 		}
@@ -49,7 +47,7 @@ func (u usecaseCartsGet) HandleUsecase(ctx context.Context, data usecases.Handle
 		}
 	}
 
-	m, err := u.repo.GetCart(ctx, req.UserID)
+	m, err := u.repo.GetCart(ctx, req.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -66,27 +64,32 @@ func (u usecaseCartsGet) HandleUsecase(ctx context.Context, data usecases.Handle
 	return u.buildArrayResponse(m, p), nil
 }
 
-func (u usecaseCartsGet) buildResponse(p *model.Products, qty int64) *responseGet {
-	return &responseGet{
+func (u usecaseCartsGet) buildResponse(p *model.Products, qty int64) *carts.Carts {
+	return &carts.Carts{
 		ID:           p.ID,
 		ProductName:  p.ProductName,
 		ProductStock: p.ProductStock,
-		ProductPrice: p.ProductPrice,
+		ProductPrice: formatter.Int64ToRupiah(int64(p.ProductPrice)),
 		ProductPic:   p.ProductPic,
 		Qty:          qty,
 	}
 }
 
-func (u usecaseCartsGet) buildArrayResponse(c []*model.Carts, p map[int64]*model.Products) []*responseGet {
-	resp := make([]*responseGet, 0)
+func (u usecaseCartsGet) buildArrayResponse(c []*model.Carts, p map[int64]*model.Products) *responseGet {
+	cartsTemp := make([]*carts.Carts, 0)
+	resp := &responseGet{}
+	var totalTagihan int64 = 0
 	for _, v := range c {
 		if !v.ProductID.Valid || (v.ProductID.Valid && p[v.ProductID.Int64] == nil) {
 			continue
 		}
 		if v.Qty.Valid {
-			resp = append(resp, u.buildResponse(p[v.ProductID.Int64], v.Qty.Int64))
+			cartsTemp = append(cartsTemp, u.buildResponse(p[v.ProductID.Int64], v.Qty.Int64))
+			totalTagihan += v.Qty.Int64 * int64(p[v.ProductID.Int64].ProductPrice)
 		}
 	}
+	resp.Data = cartsTemp
+	resp.TotalTagihan = formatter.Int64ToRupiah(totalTagihan)
 
 	return resp
 }

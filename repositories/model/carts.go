@@ -25,7 +25,7 @@ func (m Carts) QueryGet() string {
 }
 
 func (m Carts) QueryDelete() string {
-	return "DELETE FROM carts WHERE product_id = $1"
+	return "DELETE FROM carts WHERE product_id = $1 AND user_id = $2"
 }
 
 func (m Carts) QueryDeleteByUserID() string {

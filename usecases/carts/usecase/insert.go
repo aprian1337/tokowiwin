@@ -53,6 +53,15 @@ func (u usecaseCartssInsert) HandleUsecase(ctx context.Context, data usecases.Ha
 		return nil, fmt.Errorf("[GetProductsByID] %v", err)
 	}
 
+	carts, err := u.repo.GetCart(ctx, req.UserID)
+	for _, v := range carts {
+		if v.ProductID.Valid && v.ProductID.Int64 == req.ProductID {
+			resp.Success = 0
+			resp.Message = "Barang sudah ada di keranjang"
+			return resp, nil
+		}
+	}
+
 	err = db.ExecuteWithTx(ctx, data.TxExecutor, func(tx pgx.Tx) error {
 		err = u.repo.InsertCart(ctx, tx, &model.Carts{
 			ProductID: sql.NullInt64{

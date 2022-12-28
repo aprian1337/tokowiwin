@@ -30,7 +30,7 @@ type RepositoryI interface {
 	GetCart(ctx context.Context, userId int64, columns ...any) ([]*model.Carts, error)
 	InsertCart(ctx context.Context, tx pgx.Tx, cart *model.Carts) error
 	UpdateCart(ctx context.Context, tx pgx.Tx, cart *model.Carts) error
-	DeleteCart(ctx context.Context, tx pgx.Tx, id int64) error
+	DeleteCart(ctx context.Context, tx pgx.Tx, id int64, userId int64) error
 	DeleteAllCartByUserID(ctx context.Context, tx pgx.Tx, userId int64) error
 
 	GetProductsAll(ctx context.Context, columns ...any) ([]*model.Products, error)
@@ -337,7 +337,7 @@ func (r *DatabaseRepository) InsertProduct(ctx context.Context, tx pgx.Tx, users
 	return nil
 }
 
-func (r *DatabaseRepository) DeleteCart(ctx context.Context, tx pgx.Tx, id int64) error {
+func (r *DatabaseRepository) DeleteCart(ctx context.Context, tx pgx.Tx, id int64, userId int64) error {
 	var (
 		err error
 		m   = model.Carts{}
@@ -350,7 +350,7 @@ func (r *DatabaseRepository) DeleteCart(ctx context.Context, tx pgx.Tx, id int64
 		}
 	}
 
-	_, err = tx.Exec(ctx, m.QueryDelete(), id)
+	_, err = tx.Exec(ctx, m.QueryDelete(), id, userId)
 	if err != nil {
 		return err
 	}

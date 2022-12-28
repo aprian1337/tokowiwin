@@ -14,7 +14,8 @@ type usecaseCartsDelete struct {
 }
 
 type requestDelete struct {
-	ID int64 `json:"id"`
+	ID     int64 `json:"id"`
+	UserID int64 `json:"user_id"`
 }
 
 type responseDelete struct {
@@ -44,7 +45,7 @@ func (u usecaseCartsDelete) HandleUsecase(ctx context.Context, data usecases.Han
 		return nil, err
 	}
 	err = db.ExecuteWithTx(ctx, data.TxExecutor, func(tx pgx.Tx) error {
-		err = u.repo.DeleteCart(ctx, tx, req.ID)
+		err = u.repo.DeleteCart(ctx, tx, req.ID, req.UserID)
 		if err != nil {
 			return err
 		}
