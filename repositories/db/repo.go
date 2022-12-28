@@ -17,6 +17,7 @@ import (
 type RepositoryI interface {
 	InsertUser(ctx context.Context, tx pgx.Tx, users *model.Users) (int64, error)
 	GetUserByEmail(ctx context.Context, email string, columns ...any) (*model.Users, error)
+	UpdateUser(ctx context.Context, tx pgx.Tx, user *model.Users) error
 
 	GetSnapshot(ctx context.Context, txId int64, columns ...any) ([]*model.Snapshots, error)
 	InsertSnapshot(ctx context.Context, tx pgx.Tx, snapshot *model.Snapshots) error
@@ -487,6 +488,28 @@ func (r *DatabaseRepository) InsertUser(ctx context.Context, tx pgx.Tx, users *m
 	}
 
 	return id, nil
+}
+
+func (r *DatabaseRepository) UpdateUser(ctx context.Context, tx pgx.Tx, user *model.Users) error {
+	var (
+		err error
+	)
+
+	if tx == nil {
+		tx, err = r.pgClient.Begin(ctx)
+		if err != nil {
+			return err
+		}
+	}
+
+	queryVal := GetUpdateQuery(user, "id", "name", "email", "is_seller")
+	query := strings.ReplaceAll(user.QueryUpdate(), constants.DbCols, queryVal)
+	_, err = tx.Exec(ctx, query, user.ID)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (r *DatabaseRepository) InsertSnapshot(ctx context.Context, tx pgx.Tx, snapshot *model.Snapshots) error {

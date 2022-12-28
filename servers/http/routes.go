@@ -16,6 +16,7 @@ import (
 type DeliveryHTTP struct {
 	UsersAuthentication *controllers.Controller
 	UsersRegister       *controllers.Controller
+	ChangePass          *controllers.Controller
 
 	ProductsGet    *controllers.Controller
 	ProductsInsert *controllers.Controller
@@ -47,6 +48,7 @@ func (h DeliveryHTTP) InitHTTPClient(cfg *config.AppConfig) {
 
 	app.Post("/login", h.UsersAuthentication.AuthenticationController)
 	app.Post("/register", h.UsersRegister.RegisterController)
+	app.Post("/changepass", h.ChangePass.ChangePassController)
 
 	app.Get("/products", h.ProductsGet.ProductsGetController)
 	app.Post("/products", h.ProductsInsert.ProductsInsertController)

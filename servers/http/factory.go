@@ -19,6 +19,7 @@ func InitFactoryHTTP(ctx context.Context, cfg *config.AppConfig) {
 	//Users Module
 	h.UsersAuthentication = AddController(users.UCLogin{}.NewUsecase(ctx, dbRepo), validate)
 	h.UsersRegister = AddController(users.UCRegister{}.NewUsecase(ctx, dbRepo), validate)
+	h.ChangePass = AddController(users.UCChangePass{}.NewUsecase(ctx, dbRepo), validate)
 
 	//Products Module
 	h.ProductsGet = AddController(products.UCGet{}.NewUsecase(ctx, dbRepo), validate)
