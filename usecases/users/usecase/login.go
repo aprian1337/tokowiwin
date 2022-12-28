@@ -21,6 +21,13 @@ type requestLogin struct {
 type responseLogin struct {
 	Success int    `json:"success"`
 	Message string `json:"message"`
+	User    *User  `json:"user"`
+}
+
+type User struct {
+	ID    int64  `json:"id"`
+	Name  string `json:"fullname"`
+	Email string `json:"email"`
 }
 
 func (c UCLogin) NewUsecase(ctx context.Context, repo db.RepositoryI) *usecaseBuyerLogin {
@@ -56,6 +63,11 @@ func (u usecaseBuyerLogin) HandleUsecase(ctx context.Context, data usecases.Hand
 		return resp, nil
 	}
 
+	resp.User = &User{
+		ID:    user.ID,
+		Name:  user.Name,
+		Email: user.Email,
+	}
 	resp.Success = 1
 	resp.Message = "Berhasil"
 
