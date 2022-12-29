@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"github.com/jackc/pgx/v5"
 	"tokowiwin/repositories/db"
 	"tokowiwin/repositories/model"
@@ -16,9 +17,9 @@ type usecaseCartssUpdate struct {
 }
 
 type requestUpdate struct {
-	ProductID int64 `json:"product_id"`
-	UserID    int64 `json:"user_id"`
-	Qty       int64 `json:"qty"`
+	ProductID int64 `query:"product_id"`
+	UserID    int64 `query:"user_id"`
+	Qty       int   `query:"qty"`
 }
 
 type responseUpdate struct {
@@ -40,10 +41,21 @@ func (u usecaseCartssUpdate) HandleUsecase(ctx context.Context, data usecases.Ha
 		resp = new(responseUpdate)
 	)
 
-	if err = data.HTTPData.BodyParser(req); err != nil {
+	if err = data.HTTPData.QueryParser(req); err != nil {
 		return nil, err
 	}
 	err = data.Validator.Struct(*req)
+
+	product, err := u.repo.GetProductsByID(ctx, req.ProductID)
+	if err != nil {
+		return nil, err
+	}
+	if req.Qty > product.ProductStock {
+		resp.Success = 0
+		resp.Message = fmt.Sprintf("Gagal, stock barang yang tersedia : %v", product.ProductStock)
+		return resp, nil
+	}
+
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +67,7 @@ func (u usecaseCartssUpdate) HandleUsecase(ctx context.Context, data usecases.Ha
 			},
 			UserID: req.UserID,
 			Qty: sql.NullInt64{
-				Int64: req.Qty,
+				Int64: int64(req.Qty),
 				Valid: true,
 			},
 		})

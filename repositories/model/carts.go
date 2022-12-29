@@ -21,7 +21,7 @@ func (m Carts) QueryUpdate() string {
 }
 
 func (m Carts) QueryGet() string {
-	return "SELECT ${cols} FROM carts WHERE user_id = $1"
+	return "SELECT ${cols} FROM carts WHERE user_id = $1 ORDER BY product_id"
 }
 
 func (m Carts) QueryDelete() string {
