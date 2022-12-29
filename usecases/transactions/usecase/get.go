@@ -18,7 +18,7 @@ type usecaseTransactionsGet struct {
 }
 
 type requestGet struct {
-	UserID int64 `json:"user_id" validate:"numeric"`
+	UserID int64 `query:"user_id"`
 }
 
 type responseGet struct {
@@ -83,7 +83,7 @@ func (u usecaseTransactionsGet) buildResponse(t []*model.Transactions, s map[int
 				if len(s[v.ID]) > 1 {
 					tx.AnotherProduct = fmt.Sprintf("%v produk lainnya", len(s[v.ID])-1)
 				} else {
-					tx.AnotherProduct = fmt.Sprintf("Kamu hanya membeli produk ini")
+					tx.AnotherProduct = fmt.Sprintf("Hanya produk ini")
 				}
 			}
 
