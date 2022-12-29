@@ -66,12 +66,13 @@ func (u usecaseCartsGet) HandleUsecase(ctx context.Context, data usecases.Handle
 
 func (u usecaseCartsGet) buildResponse(p *model.Products, qty int64) *carts.Carts {
 	return &carts.Carts{
-		ID:           p.ID,
-		ProductName:  p.ProductName,
-		ProductStock: p.ProductStock,
-		ProductPrice: formatter.Int64ToRupiah(int64(p.ProductPrice)),
-		ProductPic:   p.ProductPic,
-		Qty:          qty,
+		ID:                p.ID,
+		ProductName:       p.ProductName,
+		ProductStock:      p.ProductStock,
+		ProductPrice:      formatter.Int64ToRupiah(int64(p.ProductPrice)),
+		ProductTotalPrice: formatter.Int64ToRupiah(int64(p.ProductPrice) * qty),
+		ProductPic:        p.ProductPic,
+		Qty:               qty,
 	}
 }
 

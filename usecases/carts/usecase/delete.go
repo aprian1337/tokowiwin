@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"fmt"
 	"github.com/jackc/pgx/v5"
 	"tokowiwin/repositories/db"
 	"tokowiwin/usecases"
@@ -45,7 +44,6 @@ func (u usecaseCartsDelete) HandleUsecase(ctx context.Context, data usecases.Han
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("REQ", req)
 	err = db.ExecuteWithTx(ctx, data.TxExecutor, func(tx pgx.Tx) error {
 		err = u.repo.DeleteCart(ctx, tx, req.ID, req.UserID)
 		if err != nil {
