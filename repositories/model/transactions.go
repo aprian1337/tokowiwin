@@ -30,13 +30,13 @@ func (m Transactions) QueryInsert() string {
 }
 
 func (m Transactions) QueryGet() string {
-	return "SELECT ${cols} FROM transactions WHERE user_id=$1"
+	return "SELECT ${cols} FROM transactions WHERE user_id=$1 ORDER BY id DESC"
 }
 
 func (m Transactions) QueryGetByID() string {
-	return "SELECT ${cols} FROM transactions WHERE id=$1"
+	return "SELECT ${cols} FROM transactions WHERE id=$1 ORDER BY id DESC"
 }
 
 func (m Transactions) QueryGetAll() string {
-	return "SELECT ${cols} FROM transactions"
+	return "SELECT ${cols} FROM transactions ORDER BY id DESC"
 }
