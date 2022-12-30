@@ -8,8 +8,16 @@ type Users struct {
 	IsSeller bool   `db:"is_seller"`
 }
 
+func (m Users) QueryGetAll() string {
+	return "SELECT ${cols} FROM users"
+}
+
 func (m Users) QueryGetByEmail() string {
 	return "SELECT ${cols} FROM users WHERE email=$1"
+}
+
+func (m Users) QueryGetById() string {
+	return "SELECT ${cols} FROM users WHERE id=$1"
 }
 
 func (m Users) QueryInsert() string {

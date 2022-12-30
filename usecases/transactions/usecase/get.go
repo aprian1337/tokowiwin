@@ -18,7 +18,8 @@ type usecaseTransactionsGet struct {
 }
 
 type requestGet struct {
-	UserID int64 `query:"user_id"`
+	UserID        int64 `query:"user_id"`
+	TransactionID int64 `query:"id"`
 }
 
 type responseGet struct {
@@ -38,7 +39,7 @@ func (u usecaseTransactionsGet) HandleUsecase(ctx context.Context, data usecases
 		err error
 	)
 
-	if data.HTTPData.Query("user_id") != "" {
+	if data.HTTPData.Query("user_id") != "" || data.HTTPData.Query("id") != "" {
 		if err = data.HTTPData.QueryParser(req); err != nil {
 			return nil, err
 		}
@@ -48,9 +49,36 @@ func (u usecaseTransactionsGet) HandleUsecase(ctx context.Context, data usecases
 		}
 	}
 
-	txs, err := u.repo.GetTransaction(ctx, req.UserID)
 	if err != nil {
 		return nil, err
+	}
+
+	txs := make([]*model.Transactions, 0)
+
+	if req.UserID != 0 {
+		txs, err = u.repo.GetTransaction(ctx, req.UserID)
+		if err != nil {
+			return nil, err
+		}
+	} else if req.TransactionID != 0 {
+		txs, err = u.repo.GetTransactionByID(ctx, req.TransactionID)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		txs, err = u.repo.GetAllTransactions(ctx)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	users, err := u.repo.GetUserAll(ctx)
+	if err != nil {
+		return nil, err
+	}
+	mapUser := make(map[int64]*model.Users)
+	for _, v := range users {
+		mapUser[v.ID] = v
 	}
 
 	txIDs := helper.GetTransactionIDs(txs)
@@ -60,10 +88,10 @@ func (u usecaseTransactionsGet) HandleUsecase(ctx context.Context, data usecases
 		return nil, err
 	}
 
-	return u.buildResponse(txs, snapshots), nil
+	return u.buildResponse(txs, snapshots, mapUser), nil
 }
 
-func (u usecaseTransactionsGet) buildResponse(t []*model.Transactions, s map[int64][]*model.Snapshots) *responseGet {
+func (u usecaseTransactionsGet) buildResponse(t []*model.Transactions, s map[int64][]*model.Snapshots, r map[int64]*model.Users) *responseGet {
 	var (
 		txList = make([]*transactions.TransactionList, 0)
 	)
@@ -108,6 +136,8 @@ func (u usecaseTransactionsGet) buildResponse(t []*model.Transactions, s map[int
 		tx.TransactionID = v.ID
 		tx.Date = formatter.ToTimezoneJakarta(v.CreatedDate).Format("2 January 2006, 15:04:05")
 		tx.TransactionDetails = txDetail
+		tx.AccountName = r[v.UserID].Name
+		tx.AccountEmail = r[v.UserID].Email
 
 		txList = append(txList, tx)
 	}

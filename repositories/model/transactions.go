@@ -32,3 +32,11 @@ func (m Transactions) QueryInsert() string {
 func (m Transactions) QueryGet() string {
 	return "SELECT ${cols} FROM transactions WHERE user_id=$1"
 }
+
+func (m Transactions) QueryGetByID() string {
+	return "SELECT ${cols} FROM transactions WHERE id=$1"
+}
+
+func (m Transactions) QueryGetAll() string {
+	return "SELECT ${cols} FROM transactions"
+}

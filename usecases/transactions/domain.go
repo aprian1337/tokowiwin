@@ -2,6 +2,8 @@ package transactions
 
 type TransactionList struct {
 	TransactionID      int64              `json:"transaction_id"`
+	AccountName        string             `json:"account_name"`
+	AccountEmail       string             `json:"account_email"`
 	ProductName        string             `json:"product_name"`
 	AnotherProduct     string             `json:"another_product"`
 	Date               string             `json:"date"`
