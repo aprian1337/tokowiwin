@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/jackc/pgx/v5"
+	"strconv"
 	"time"
 	"tokowiwin/repositories/db"
 	"tokowiwin/repositories/model"
@@ -19,6 +20,7 @@ type usecaseTransactionsInsert struct {
 }
 
 type requestInsert struct {
+	ID              int64  `json:"id"`
 	UserID          int64  `json:"user_id"`
 	ReceiverName    string `json:"receiver_name"`
 	ReceiverPhone   string `json:"receiver_phone"`
@@ -27,8 +29,10 @@ type requestInsert struct {
 }
 
 type responseInsert struct {
-	Success int    `json:"success"`
-	Message string `json:"message"`
+	ID          int64  `json:"id"`
+	PaymentType string `json:"payment_type"`
+	Success     int    `json:"success"`
+	Message     string `json:"message"`
 }
 
 func (c UCInsert) NewUsecase(ctx context.Context, repo db.RepositoryI) *usecaseTransactionsInsert {
@@ -43,6 +47,7 @@ func (u usecaseTransactionsInsert) HandleUsecase(ctx context.Context, data useca
 		err  error
 		req  = new(requestInsert)
 		resp = new(responseInsert)
+		idTx int64
 	)
 
 	if err = data.HTTPData.BodyParser(req); err != nil {
@@ -51,6 +56,12 @@ func (u usecaseTransactionsInsert) HandleUsecase(ctx context.Context, data useca
 	err = data.Validator.Struct(*req)
 	if err != nil {
 		return nil, err
+	}
+
+	if req.ID == 0 {
+		IDStr := fmt.Sprintf("%v%v", req.UserID, time.Now().UnixMilli())
+		IDNum, _ := strconv.ParseInt(IDStr, 10, 64)
+		req.ID = IDNum
 	}
 
 	if req.PaymentType != model.PaymentTypeCOD && req.PaymentType != model.PaymentTypeManualTransfer {
@@ -76,7 +87,6 @@ func (u usecaseTransactionsInsert) HandleUsecase(ctx context.Context, data useca
 	err = db.ExecuteWithTx(ctx, data.TxExecutor, func(tx pgx.Tx) error {
 		var (
 			err    error
-			id     int64
 			status = model.StatusBelumDibayar
 		)
 
@@ -84,7 +94,8 @@ func (u usecaseTransactionsInsert) HandleUsecase(ctx context.Context, data useca
 			status = model.PaymentTypeCOD
 		}
 
-		id, err = u.repo.InsertTransaction(ctx, tx, &model.Transactions{
+		idTx, err = u.repo.InsertTransaction(ctx, tx, &model.Transactions{
+			ID:              req.ID,
 			UserID:          req.UserID,
 			ReceiverName:    req.ReceiverName,
 			ReceiverPhone:   req.ReceiverPhone,
@@ -116,7 +127,7 @@ func (u usecaseTransactionsInsert) HandleUsecase(ctx context.Context, data useca
 			}
 
 			err = u.repo.InsertSnapshot(ctx, tx, &model.Snapshots{
-				TransactionID: id,
+				TransactionID: idTx,
 				ProductPic:    productPic,
 				ProductName:   productName,
 				ProductPrice:  productPrice,
@@ -144,6 +155,8 @@ func (u usecaseTransactionsInsert) HandleUsecase(ctx context.Context, data useca
 		return nil, err
 	}
 
+	resp.ID = idTx
+	resp.PaymentType = req.PaymentType
 	resp.Success = 1
 	resp.Message = "Berhasil"
 

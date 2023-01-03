@@ -36,6 +36,7 @@ func InitFactoryHTTP(ctx context.Context, cfg *config.AppConfig) {
 	//Transactions Module
 	h.TransactionsGet = AddController(transactions.UCGet{}.NewUsecase(ctx, dbRepo), validate)
 	h.TransactionsInsert = AddController(transactions.UCInsert{}.NewUsecase(ctx, dbRepo), validate)
+	h.TransactionsPaymentGateway = AddController(transactions.UCPayment{}.NewUsecase(ctx, dbRepo), validate)
 
 	h.InitHTTPClient(cfg)
 }

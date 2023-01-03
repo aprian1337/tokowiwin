@@ -20,8 +20,9 @@ type requestGet struct {
 }
 
 type responseGet struct {
-	Data         []*carts.Carts `json:"data"`
-	TotalTagihan string         `json:"total_tagihan"`
+	Data                []*carts.Carts `json:"data"`
+	TotalTagihan        string         `json:"total_tagihan"`
+	TotalTagihanNumeric int64          `json:"total_tagihan_numeric"`
 }
 
 func (c UCGet) NewUsecase(ctx context.Context, repo db.RepositoryI) *usecaseCartsGet {
@@ -91,6 +92,7 @@ func (u usecaseCartsGet) buildArrayResponse(c []*model.Carts, p map[int64]*model
 	}
 	resp.Data = cartsTemp
 	resp.TotalTagihan = formatter.Int64ToRupiah(totalTagihan)
+	resp.TotalTagihanNumeric = totalTagihan
 
 	return resp
 }

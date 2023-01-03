@@ -139,3 +139,11 @@ func (ct *Controller) TransactionsGetController(c *fiber.Ctx) error {
 	}
 	return BaseSuccessResponse(c, data)
 }
+
+func (ct *Controller) TransactionsPaymentController(c *fiber.Ctx) error {
+	data, err := ct.Handler.HandleUsecase(ct.buildParamHandleUsecase(c))
+	if err != nil {
+		return BaseErrorResponse(c, err, http.StatusInternalServerError)
+	}
+	return c.JSON(data)
+}

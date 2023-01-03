@@ -28,9 +28,10 @@ type DeliveryHTTP struct {
 	CartsUpdate *controllers.Controller
 	CartsDelete *controllers.Controller
 
-	TransactionsGet    *controllers.Controller
-	TransactionsInsert *controllers.Controller
-	TransactionsUpdate *controllers.Controller
+	TransactionsGet            *controllers.Controller
+	TransactionsInsert         *controllers.Controller
+	TransactionsUpdate         *controllers.Controller
+	TransactionsPaymentGateway *controllers.Controller
 }
 
 func (h DeliveryHTTP) InitHTTPClient(cfg *config.AppConfig) {
@@ -62,6 +63,7 @@ func (h DeliveryHTTP) InitHTTPClient(cfg *config.AppConfig) {
 
 	app.Get("/transactions", h.TransactionsGet.TransactionsGetController)
 	app.Post("/transactions", h.TransactionsInsert.TransactionsInsertController)
+	app.Post("/charge", h.TransactionsPaymentGateway.TransactionsPaymentController)
 
 	err := app.Listen(cfg.Server.Address)
 	if err != nil {

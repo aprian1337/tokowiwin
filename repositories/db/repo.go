@@ -683,12 +683,12 @@ func (r *DatabaseRepository) InsertTransaction(ctx context.Context, tx pgx.Tx, t
 		}
 	}
 
-	columns := structs.GetColumns(modelDb, "id")
+	columns := structs.GetColumns(modelDb)
 	columnsStr := array.ToStringWithDelimiter(columns, ",")
 	query := strings.ReplaceAll(modelDb.QueryInsert(), constants.DbCols, columnsStr)
+	fmt.Println("QUERY", query)
 	err = tx.QueryRow(ctx, query, structs.GetAddressByFieldTag(transaction, constants.DbTag, converts.AnyArrayToString(columns))...).Scan(&id)
 	if err != nil {
-		fmt.Println("ERR", err)
 		return id, err
 	}
 

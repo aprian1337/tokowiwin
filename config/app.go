@@ -12,6 +12,7 @@ type AppConfig struct {
 	Server   Server
 	Context  Context
 	Database Database
+	Gateway  PaymentGateway
 }
 
 type Server struct {
@@ -28,6 +29,10 @@ type Database struct {
 	User string
 	Pass string
 	Name string
+}
+
+type PaymentGateway struct {
+	Key string
 }
 
 var cfg *AppConfig

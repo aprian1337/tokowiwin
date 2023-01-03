@@ -26,7 +26,7 @@ const (
 )
 
 func (m Transactions) QueryInsert() string {
-	return "INSERT INTO transactions (${cols}) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id"
+	return "INSERT INTO transactions (${cols}) VALUES ($1::bigint, $2, $3, $4, $5, $6, $7, $8) RETURNING id"
 }
 
 func (m Transactions) QueryGet() string {

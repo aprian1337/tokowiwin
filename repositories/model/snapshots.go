@@ -10,12 +10,12 @@ type Snapshots struct {
 }
 
 func (m Snapshots) QueryInsert() string {
-	return "INSERT INTO snapshots (${cols}) VALUES ($1, $2, $3, $4, $5)"
+	return "INSERT INTO snapshots (${cols}) VALUES ($1::bigint, $2, $3, $4, $5)"
 }
 func (m Snapshots) QueryGet() string {
 	return "SELECT ${cols} FROM snapshots WHERE transaction_id=$1"
 }
 
 func (m Snapshots) QueryGetByTransactionIDs() string {
-	return "SELECT ${cols} FROM snapshots WHERE transaction_id=ANY($1::int[])"
+	return "SELECT ${cols} FROM snapshots WHERE transaction_id=ANY($1::bigint[])"
 }
