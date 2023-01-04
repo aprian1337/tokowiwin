@@ -137,6 +137,17 @@ func (u usecaseTransactionsInsert) HandleUsecase(ctx context.Context, data useca
 				return err
 			}
 
+			err = u.repo.UpdateProduct(ctx, tx, &model.Products{
+				ID:           v.ProductID.Int64,
+				ProductName:  productName,
+				ProductStock: products[v.ProductID.Int64].ProductStock - int(productQty),
+				ProductPrice: productPrice,
+				ProductPic:   productPic,
+			})
+			if err != nil {
+				return err
+			}
+
 		}
 
 		if err != nil {
