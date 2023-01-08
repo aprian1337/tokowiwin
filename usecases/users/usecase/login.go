@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"fmt"
 	"tokowiwin/repositories/db"
 	"tokowiwin/usecases"
 	"tokowiwin/utils/hash"
@@ -19,9 +20,10 @@ type requestLogin struct {
 }
 
 type responseLogin struct {
-	Success int    `json:"success"`
-	Message string `json:"message"`
-	User    *User  `json:"user"`
+	Success    int    `json:"success"`
+	Message    string `json:"message"`
+	HeaderText string `json:"header_text"`
+	User       *User  `json:"user"`
 }
 
 type User struct {
@@ -70,6 +72,7 @@ func (u usecaseBuyerLogin) HandleUsecase(ctx context.Context, data usecases.Hand
 	}
 	resp.Success = 1
 	resp.Message = "Berhasil"
+	resp.HeaderText = fmt.Sprintf("Hello, %v", user.Name)
 
 	return resp, nil
 }
