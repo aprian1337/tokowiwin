@@ -9,7 +9,7 @@ type Products struct {
 }
 
 func (m Products) QueryGetAll() string {
-	return "SELECT ${cols} FROM products WHERE product_stock > 0"
+	return "SELECT ${cols} FROM products WHERE product_stock > 0 ORDER BY id DESC"
 }
 
 func (m Products) QueryGetByID() string {
