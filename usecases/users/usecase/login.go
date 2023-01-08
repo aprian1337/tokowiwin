@@ -3,7 +3,8 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"strings"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 	"tokowiwin/repositories/db"
 	"tokowiwin/usecases"
 	"tokowiwin/utils/hash"
@@ -73,7 +74,7 @@ func (u usecaseBuyerLogin) HandleUsecase(ctx context.Context, data usecases.Hand
 	}
 	resp.Success = 1
 	resp.Message = "Berhasil"
-	resp.HeaderText = fmt.Sprintf("Hello, %v", strings.ToTitle(user.Name))
+	resp.HeaderText = fmt.Sprintf("Hello, %v", cases.Title(language.Indonesian, cases.NoLower).String(user.Name))
 
 	return resp, nil
 }
