@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"fmt"
+	"strings"
 	"tokowiwin/repositories/db"
 	"tokowiwin/usecases"
 	"tokowiwin/utils/hash"
@@ -72,7 +73,7 @@ func (u usecaseBuyerLogin) HandleUsecase(ctx context.Context, data usecases.Hand
 	}
 	resp.Success = 1
 	resp.Message = "Berhasil"
-	resp.HeaderText = fmt.Sprintf("Hello, %v", user.Name)
+	resp.HeaderText = fmt.Sprintf("Hello, %v", strings.ToTitle(user.Name))
 
 	return resp, nil
 }
